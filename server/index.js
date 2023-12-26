@@ -1,16 +1,13 @@
 const express = require('express');
 const app = express();
 const port = 3001;
-const sequelize = require('./config/sequelize.js');
-const {User,  Post, Comment, Like} = require('./models/ModelAssociations.js');
+const userRoutes = require('./routes/userRoutes.js');
+const postRoutes = require('./routes/activtyRoutes.js');
 
-sequelize.sync({ force: true })
-  .then(() => {
-    console.log('Models synced successfully.');
-  })
-  .catch((error) => {
-    console.error('Error syncing models:', error);
-  });
+
+app.use(express.json());
+app.use('/users', userRoutes);
+app.use('/activity', postRoutes);
 
 app.get('/', (req, res) => res.send('Hello World!'));
 
