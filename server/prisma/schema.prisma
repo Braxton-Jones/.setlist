@@ -42,13 +42,13 @@ model Posts {
   username  String     @db.VarChar(255)
   audioTag  String?    @db.VarChar(255)
   mediaLink String?    @db.VarChar(255)
-  tags      String[]   @db.VarChar(255)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   userId    Int?
   Comments  Comments[]
   Likes     Likes[]
   Users     Users?     @relation(fields: [userId], references: [id])
+  tags      Tags[]     // Add a new field to establish the relationship
 }
 
 model Users {
@@ -63,3 +63,11 @@ model Users {
   Comments     Comments[]
   Posts        Posts[]
 }
+
+model Tags {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(255)
+  spotifyId String?  @db.VarChar(255)
+  posts     Posts[]  // Add a new field to establish the relationship
+}
+

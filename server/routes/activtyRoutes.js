@@ -28,17 +28,18 @@ Routes for Commenting and Liking Posts
 ---------- */
 
 // Add comment to post
-router.post('/posts/:body/comments', commentControllers.addComment);
+router.post('/posts/:postid/comments', commentControllers.addComment);
 
 // Remove comment from post
-router.delete('/posts/:body/comments/:comment', commentControllers.deleteComment);
+router.delete('/posts/:postid/comments/:commentid', commentControllers.deleteComment);
 
-// Edit comment on post
-router.put('/posts/:body/comments/:comment', commentControllers.updateComment);
+// Add comment to comment
+router.post('/posts/:postid/comments/:commentid', commentControllers.addComment);
+
 
 // Like a post
-router.post('/posts/:id/likes', likeControllers.likePost);
+router.post('/posts/:postid/likes', likeControllers.likePost);
 // Unlike a post
-router.delete('/posts/:id/likes', likeControllers.unlikePost);
+router.delete('/posts/:postid/likes', likeControllers.unlikePost);
 
 module.exports = router;

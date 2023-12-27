@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 // Get All Posts
 exports.getAllPosts = async (req, res) => {
   try {
-    const posts = await prisma.posts.findMany({
+    const posts = await prisma.posts.findMany({ 
       select: {
         id: true,
         userId: true,
@@ -14,7 +14,19 @@ exports.getAllPosts = async (req, res) => {
         body: true,
         tags: true,
         Likes: true,
-        Comments: true,
+        Comments: {
+          select: {
+            id: true,
+            username: true,
+            body: true,
+            commentId: true,
+            createdAt: true,
+            updatedAt: true,
+            Comments: true,
+            other_Comments: true,
+            Likes: true,
+          }
+        }
       }
     });
     return res.json(posts);
@@ -23,34 +35,22 @@ exports.getAllPosts = async (req, res) => {
     return res.json(err);
   }
 };
-
-// Get Post's comments
-exports.getPostComments = async (req, res) => {
-    try {
-      const post = await prisma.posts.findUnique({
-        where: {
-          body: req.params.body,
-        },
-        include: {
-          commentsList: true,
-        },
-      });
-      return res.json(post.commentsList);
-    } catch (err) {
-      return res.json(err);
-    }
-  };
   
   // Create Post
   exports.createPost = async (req, res) => {
     try {
+      // Checking for tags
+      const tagsExist
+
       const post = await prisma.posts.create({
         data: {
           username: req.body.username,
           body: req.body.body,
           title: req.body.title,
           userId: req.body.userId,
-          tags: typeof req.body.tags === 'string' ? [req.body.tags] : req.body.tags,
+          tags: {
+            create: req.body.tags.map(tag => ({ name: tag }))
+          },
           audioTag: req.body.audioTag || 'none',
           mediaLink: req.body.mediaLink || 'none'
         },
@@ -102,13 +102,12 @@ exports.getPostComments = async (req, res) => {
   // Get Relevant Posts (search by tags)
   exports.getRelevantPosts = async (req, res) => {
     try {
-      const posts = await prisma.posts.findMany({
-        where: {
-          tags: req.params.tags,
-        },
-      });
+      const tag = 'Red Velvet'; // Replace with the actual tag
+      const posts = await prisma.$queryRaw`SELECT * FROM "Posts" WHERE $1 = ANY("tags")`(tag);
+      if(!posts.length) return res.status(404).json({ message: 'No posts found' });
       return res.json(posts);
     } catch (err) {
+      console.error(err)
       return res.json(err);
     }
   };
