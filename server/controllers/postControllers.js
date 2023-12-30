@@ -14,19 +14,6 @@ exports.getAllPosts = async (req, res) => {
         body: true,
         tags: true,
         Likes: true,
-        Comments: {
-          select: {
-            id: true,
-            username: true,
-            body: true,
-            commentId: true,
-            createdAt: true,
-            updatedAt: true,
-            Comments: true,
-            other_Comments: true,
-            Likes: true,
-          }
-        }
       }
     });
     return res.json(posts);
@@ -38,29 +25,36 @@ exports.getAllPosts = async (req, res) => {
   
   // Create Post
   exports.createPost = async (req, res) => {
-    try {
-      // Checking for tags
-      const tagsExist
+    try{
+      const result = await prisma.$transaction([
+        // Check if tags used exist in database
+        ...req.body.tags.map((tag) => prisma.tags.upsert({
+          where: {spotifyId: tag.spotifyId, name: tag.name},
+          update: {},
+          create: tag
+        })),
 
-      const post = await prisma.posts.create({
-        data: {
-          username: req.body.username,
-          body: req.body.body,
-          title: req.body.title,
-          userId: req.body.userId,
-          tags: {
-            create: req.body.tags.map(tag => ({ name: tag }))
-          },
-          audioTag: req.body.audioTag || 'none',
-          mediaLink: req.body.mediaLink || 'none'
-        },
-      });
-      return res.status(200).json({ post, message: 'Post created successfully' });
-    } catch (err) {
-        console.error(err)
-      return res.status(500).json(err);
+        // Create post with associated tags
+        prisma.posts.create({
+          data: {
+            userId: parseInt(req.body.userId),
+            username: req.body.username,
+            title: req.body.title,
+            body: req.body.body,
+            tags: {
+              connect: req.body.tags.map((tag) => ({spotifyId: tag.spotifyId}))
+            }
+          }
+        })
+
+
+      ])
+      return res.json(result);
+    }catch(err){
+      console.error(err)
+      return res.json(err);
     }
-   };
+  };
    
   
   // Update Post
@@ -75,6 +69,7 @@ exports.getAllPosts = async (req, res) => {
           body: req.body.body,
           likes: req.body.likes,
           comments: req.body.comments,
+          tags: req.body.tags,
         },
       });
       return res.sendStatus(200);
@@ -102,12 +97,40 @@ exports.getAllPosts = async (req, res) => {
   // Get Relevant Posts (search by tags)
   exports.getRelevantPosts = async (req, res) => {
     try {
-      const tag = 'Red Velvet'; // Replace with the actual tag
-      const posts = await prisma.$queryRaw`SELECT * FROM "Posts" WHERE $1 = ANY("tags")`(tag);
-      if(!posts.length) return res.status(404).json({ message: 'No posts found' });
+      const posts = await prisma.posts.findMany({
+        where: {
+          tags: {
+            some: {
+              name: {
+                in: req.body.tags
+              }
+            }
+          }
+        },
+        select: {
+          id: true,
+          userId: true,
+          username: true,
+          title: true,
+          body: true,
+          tags: true,
+          Likes: true,
+        }
+      });
       return res.json(posts);
     } catch (err) {
       console.error(err)
       return res.json(err);
     }
   };
+
+
+exports.deleteTags = async (req, res) => {
+  try {
+    await prisma.tags.deleteMany();
+    return res.sendStatus(200);
+  } catch (err) {
+    console.error(err)
+    return res.json(err);
+  }
+}

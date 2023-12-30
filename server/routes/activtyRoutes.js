@@ -23,23 +23,60 @@ router.put('/posts/:id', postControllers.updatePost);
 // Delete Post
 router.delete('/posts/:id', postControllers.deletePost);
 
-/* ----------
-Routes for Commenting and Liking Posts
----------- */
+
+
+/* -------------------------
+Routes for Commenting Posts
+------------------------- */
+
+// Get all comments for a post
+router.get('/posts/:postid/comments', commentControllers.getComments);
 
 // Add comment to post
-router.post('/posts/:postid/comments', commentControllers.addComment);
+router.post('/posts/:userid/:postid', commentControllers.addComment);
 
-// Remove comment from post
-router.delete('/posts/:postid/comments/:commentid', commentControllers.deleteComment);
+// Delete comment or nested reply from post
+router.delete('/posts/comments/:commentid', commentControllers.deleteComment);
 
-// Add comment to comment
-router.post('/posts/:postid/comments/:commentid', commentControllers.addComment);
+// Add reply to comment
+router.post('/posts/comments/:userid/:commentid', commentControllers.addComment);
 
 
+/* --------------------------------
+Routes for Liking Posts & Comments
+--------------------------------- */
 // Like a post
-router.post('/posts/:postid/likes', likeControllers.likePost);
+router.post('/posts/:username/likes/:postid', likeControllers.likePost);
+
 // Unlike a post
-router.delete('/posts/:postid/likes', likeControllers.unlikePost);
+router.delete('/posts/:username/likes/:postid', likeControllers.unlikePost);
+
+// Like a comment
+router.post('/posts/:username/comments/likes/:commentid', likeControllers.likeComment);
+
+// Unlike a comment
+router.delete('/posts/:username/comments/likes/:commentid', likeControllers.unlikeComment);
+
+
+
+
+
+
+
+
+
+
+
+
+// Delete Tags (Not in use. for development purposes only)
+// router.delete('/tags', async (req, res) => {
+//   try {
+//     await prisma.tags.deleteMany();
+//     return res.sendStatus(200);
+//   } catch (err) {
+//     console.error(err)
+//     return res.json(err);
+//   }
+// });
 
 module.exports = router;

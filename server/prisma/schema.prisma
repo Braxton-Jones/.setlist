@@ -18,7 +18,7 @@ model Comments {
   userId         Int?
   commentId      Int?
   Comments       Comments?  @relation("CommentsToComments", fields: [commentId], references: [id])
-  other_Comments Comments[] @relation("CommentsToComments")
+  replies        Comments[] @relation("CommentsToComments")
   Posts          Posts?     @relation(fields: [postId], references: [id])
   Users          Users?     @relation(fields: [userId], references: [id])
   Likes          Likes[]
@@ -27,12 +27,12 @@ model Comments {
 model Likes {
   id        Int       @id @default(autoincrement())
   username  String    @db.VarChar(255)
-  postId    Int
+  postId    Int?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   commentId Int?
   Comments  Comments? @relation(fields: [commentId], references: [id])
-  Posts     Posts     @relation(fields: [postId], references: [id], onDelete: NoAction)
+  Posts     Posts?     @relation(fields: [postId], references: [id], onDelete: NoAction)
 }
 
 model Posts {
@@ -65,9 +65,8 @@ model Users {
 }
 
 model Tags {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique @db.VarChar(255)
-  spotifyId String?  @db.VarChar(255)
+  name      String  @db.VarChar(255)
+  spotifyId String  @id @db.VarChar(255)
   posts     Posts[]  // Add a new field to establish the relationship
 }
 
