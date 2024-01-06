@@ -50,8 +50,8 @@ export default function LandingPage() {
           <p>
             Our matchmaking algorithm goes beyond the surface, analyzing your
             music preferences to connect you with like-minded individuals. Say
-            goodbye to generic connections; CrescendoClub is where
-            real musical bonds are formed.
+            goodbye to generic connections; CrescendoClub is where real musical
+            bonds are formed.
           </p>
         </div>
         <div className={styles.step}>
