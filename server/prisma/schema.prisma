@@ -8,65 +8,75 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Comments {
-  id             Int        @id @default(autoincrement())
-  username       String     @db.VarChar(255)
-  body           String     @db.VarChar(255)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  postId         Int?
-  userId         Int?
-  commentId      Int?
-  Comments       Comments?  @relation("CommentsToComments", fields: [commentId], references: [id])
-  replies        Comments[] @relation("CommentsToComments")
-  Posts          Posts?     @relation(fields: [postId], references: [id])
-  Users          Users?     @relation(fields: [userId], references: [id])
-  Likes          Likes[]
+model Users {
+ id                Int           @id @default(autoincrement())
+ email             String        @unique
+ name              String?
+ spotifyUserId     String?       @unique
+ spotifyUserURI    String?       @unique
+ photoURL          String?
+ createdAt         DateTime      @default(now())
+ updatedAt         DateTime      @updatedAt
+ deletedAt         DateTime?
+ isOnboarded       Boolean       @default(false)
+ associatedGenres  String[]
+ followedArtists   String[]
+ posts             Posts[]
+ comments          Comments[]
+ playlists         Playlists[]
+ nestedComments    NestedComments[]
 }
 
-model Likes {
-  id        Int       @id @default(autoincrement())
-  username  String    @db.VarChar(255)
-  postId    Int?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  commentId Int?
-  Comments  Comments? @relation(fields: [commentId], references: [id])
-  Posts     Posts?     @relation(fields: [postId], references: [id], onDelete: NoAction)
+model Playlists {
+ id                Int           @id @default(autoincrement())
+ name              String
+ photoURL          String?
+ createdAt         DateTime      @default(now())
+ updatedAt         DateTime      @updatedAt
+ deletedAt         DateTime?
+ spotifyPlaylistId String?       @unique
+ spotifyPlaylistURI String?      @unique
+ associatedGenres  String[]
+ associatedArtists String[]
+ purpose           String?
+ users             Users[]
+ posts             Posts[]
 }
 
 model Posts {
-  id        Int        @id @default(autoincrement())
-  title     String     @db.VarChar(255)
-  body      String     @db.VarChar(255)
-  username  String     @db.VarChar(255)
-  audioTag  String?    @db.VarChar(255)
-  mediaLink String?    @db.VarChar(255)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  userId    Int?
-  Comments  Comments[]
-  Likes     Likes[]
-  Users     Users?     @relation(fields: [userId], references: [id])
-  tags      Tags[]     // Add a new field to establish the relationship
+ id                Int           @id @default(autoincrement())
+ createdAt         DateTime      @default(now())
+ updatedAt         DateTime      @updatedAt
+ deletedAt         DateTime?
+ content           String
+ authorId          Int           
+ author            Users         @relation(fields: [authorId], references: [id])
+ comments          Comments[]
+ playlistId        Int?          
+ playlist          Playlists?     @relation(fields: [playlistId], references: [id])
 }
 
-model Users {
-  id           Int        @id @default(autoincrement())
-  username     String     @unique @db.VarChar(255)
-  displayPhoto String?    @db.VarChar(255)
-  bio          String?    @db.VarChar(255)
-  email        String     @unique @db.VarChar(255)
-  topArtists   String[]   @db.VarChar(255)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  Comments     Comments[]
-  Posts        Posts[]
+model Comments {
+ id                Int           @id @default(autoincrement())
+ createdAt         DateTime      @default(now())
+ updatedAt         DateTime      @updatedAt
+ deletedAt         DateTime?
+ content           String
+ authorId          Int
+ author            Users         @relation(fields: [authorId], references: [id])
+ postId            Int
+ post              Posts          @relation(fields: [postId], references: [id])
+ nestedComments    NestedComments[]
 }
 
-model Tags {
-  name      String  @db.VarChar(255)
-  spotifyId String  @id @db.VarChar(255)
-  posts     Posts[]  // Add a new field to establish the relationship
+model NestedComments {
+ id                Int           @id @default(autoincrement())
+ createdAt         DateTime      @default(now())
+ updatedAt         DateTime      @updatedAt
+ deletedAt         DateTime?
+ authorId          Int
+ author            Users         @relation(fields: [authorId], references: [id])
+ content           String
+ commentId         Int
+ comment           Comments       @relation(fields: [commentId], references: [id])
 }
-
