@@ -1,22 +1,17 @@
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Route,
-  RouterProvider,
-} from 'react-router-dom'
 import LandingPage from './views/LandingPage'
-import Homepage from './views/Homepage'
-import Layout from './Layout'
-function App() {
-  const router = createBrowserRouter(
-    createRoutesFromElements(
-      <Route path="/" element={<Layout />}>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/home" element={<Homepage />} />
-      </Route>,
-    ),
-  )
-  return <RouterProvider router={router} />
-}
+import SetlistApp from './views/SetlistApp'
+import { useEffect, useState } from 'react'
 
-export default App
+export default function App() {
+  const [isAccessToken, setAccessToken] = useState(null)
+
+  useEffect(() => {
+    if (window.localStorage.getItem('spotify_access_token')) {
+      setAccessToken(true)
+    } else {
+      setAccessToken(false)
+    }
+  }, [])
+
+  return <div>{isAccessToken ? <SetlistApp /> : <LandingPage />}</div>
+}

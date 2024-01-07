@@ -10,11 +10,7 @@ exports.createUser = async (req, res) => {
     email,
     name,
     spotifyUserId,
-    spotifyUserURI,
-    photoURL,
     isOnboarded,
-    associatedGenres,
-    followedArtists, 
   } = req.body;
   try {
     const user = await prisma.users.create({
@@ -22,12 +18,7 @@ exports.createUser = async (req, res) => {
         email,
         name,
         spotifyUserId,
-        spotifyUserURI,
-        photoURL,
         isOnboarded,
-        associatedGenres,
-        followedArtists
-    
       },
     });
     res.status(201).json(user);
@@ -40,23 +31,19 @@ exports.createUser = async (req, res) => {
 };
 
 // Get a User by their ID
-exports.getUserById = async (req, res) => {
+exports.getUserBySpotifyId = async (req, res) => {
 
   try {
     const user = await prisma.users.findUnique({
       where: {
-        id: parseInt(req.params.id),
+        spotifyUserId: req.params.spotifyuserid,
       },
       select:{
         id: true,
         email: true,
         name: true,
         spotifyUserId: true,
-        spotifyUserURI: true,
-        photoURL: true,
         isOnboarded: true,
-        associatedGenres: true,
-        followedArtists: true,
         playlists: true,
         posts: true,
       }
@@ -76,6 +63,23 @@ exports.deleteUserById = async (req, res) => {
     const user = await prisma.users.delete({
       where: {
         id: parseInt(req.params.id),
+      },
+    });
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(404).json({ error: error.message });
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
+// Check if a user exists by their Spotify ID
+exports.checkUserExistsBySpotifyId = async (req, res) => {
+  try {
+    const user = await prisma.users.findUnique({
+      where: {
+        spotifyUserId: req.params.spotifyuserid,
       },
     });
     res.status(200).json(user);
