@@ -12,7 +12,7 @@ export const isUserOnboarded = async (token) => {
   try {
     // Get user data from Spotify API
     const response = await axios.get(url, config)
-    const { display_name, id, email, } = response.data
+    const { display_name, id, email } = response.data
     console.log(id)
 
     // Check if user is in database (returns null if user does not exist)
@@ -34,9 +34,9 @@ export const isUserOnboarded = async (token) => {
         throw error
       }
     } else {
-        // User exists in database, so they've already onboarded
-        const user = axios.get(`http://localhost:3001/user/${id}`)
-        return user
+      // User exists in database, so they've already onboarded
+      const user = axios.get(`http://localhost:3001/user/${id}`)
+      return user
     }
   } catch (error) {
     console.error(error)
@@ -44,6 +44,4 @@ export const isUserOnboarded = async (token) => {
   }
 }
 
-export const onboardUser = async (token) => {
-
-}
+export const onboardUser = async (token) => {}

@@ -1,0 +1,65 @@
+main {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    // font-family: 'Prompt', sans-serif;
+    font-family: 'Syne', sans-serif;
+  }
+
+  p {
+    font-family: 'Prompt', sans-serif;
+  }
+
+  .tutorial {
+    background-color: #2b2b2b;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 325px;
+    box-shadow: hsla(250, 46%, 68%, 1) 0px 5px, hsla(250, 46%, 68%, 0.8) 0px 10px, hsla(250, 46%, 68%, 0.6) 0px 15px, hsla(250, 46%, 68%, 0.4) 0px 20px, hsla(250, 46%, 68%, 0.2) 0px 25px;
+    color: #f1f1f1;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+
+    h2 {
+      font-weight: 800;
+      font-size: 28px;
+      letter-spacing: 1.8px;
+    }
+    p {
+      font-size: 15px;
+      letter-spacing: 1.5px;
+      line-height: 20px;
+      font-weight: 300;
+    }
+
+    button {
+      background-color: #f1f1f1;
+      color: #2b2b2b;
+      font-family: 'Prompt', sans-serif;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+
+      &:hover {
+        background-color: #2b2b2b;
+        color: #f1f1f1;
+        border: 1px solid #f1f1f1;
+      }
+    }
+  }
+}

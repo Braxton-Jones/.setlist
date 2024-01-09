@@ -1,5 +1,5 @@
-import LandingPage from './views/LandingPage'
-import SetlistApp from './views/SetlistApp'
+import LandingPage from './pages/LandingPage'
+import SetlistApp from './pages/SetlistApp'
 import { useEffect, useState } from 'react'
 
 export default function App() {
