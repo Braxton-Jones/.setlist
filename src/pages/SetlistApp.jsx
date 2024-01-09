@@ -7,7 +7,7 @@ import {
   useLoaderData,
   useNavigate,
 } from 'react-router-dom'
-import { access_token, spotify_logout } from '../utility/spotifyAuth'
+import { access_token, spotify_logout } from '../utility/spotifyAPI_Auth'
 import HomePage, { homepageLoader } from '../views/Home'
 import Profile from '../views/Profile'
 import Search from '../views/Search'
@@ -49,6 +49,7 @@ const routes = createRoutesFromElements([
     <Route path="profile" element={<Profile />} />
     <Route path="search" element={<Search />} />
     <Route path="*" element={<h1>Not Found</h1>} />
+    <Route path="error" element={<h1>Something went wrong</h1>} />
   </Route>,
 ])
 

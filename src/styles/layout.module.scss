@@ -20,7 +20,12 @@ main {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 325px;
-    box-shadow: hsla(250, 46%, 68%, 1) 0px 5px, hsla(250, 46%, 68%, 0.8) 0px 10px, hsla(250, 46%, 68%, 0.6) 0px 15px, hsla(250, 46%, 68%, 0.4) 0px 20px, hsla(250, 46%, 68%, 0.2) 0px 25px;
+    box-shadow:
+      hsla(250, 46%, 68%, 1) 0px 5px,
+      hsla(250, 46%, 68%, 0.8) 0px 10px,
+      hsla(250, 46%, 68%, 0.6) 0px 15px,
+      hsla(250, 46%, 68%, 0.4) 0px 20px,
+      hsla(250, 46%, 68%, 0.2) 0px 25px;
     color: #f1f1f1;
     padding: 15px;
     display: flex;

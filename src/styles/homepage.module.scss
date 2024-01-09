@@ -6,16 +6,16 @@
   background-color: hsla(0, 0%, 8%, 1);
   color: hsla(0, 0%, 96%, 1);
 
-.logo{
+  .logo {
     font-size: 42px;
     font-weight: 800;
     letter-spacing: 2.5px;
     padding: 40px 15px 10px 15px;
     font-style: italic;
     color: hsla(250, 46%, 68%, 1);
-    background-color: hsla(250, 46%, 68%, .2);
+    background-color: hsla(250, 46%, 68%, 0.2);
     border-radius: 0px 0px 10px 10px;
-}
+  }
   header {
     display: flex;
     align-items: center;
@@ -26,11 +26,10 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 2px;
-      background-color: hsla(0, 0%, 96%, .2);
+      background-color: hsla(0, 0%, 96%, 0.2);
       padding: 8px;
       border-radius: 8px;
       margin-right: auto;
-      
     }
 
     .importbtn {
@@ -64,7 +63,6 @@
         font-weight: 500;
         letter-spacing: 1.5px;
         box-shadow: rgb(16, 107, 48) 0px 4px 12px;
-        
 
         .spotify {
           opacity: 1;
@@ -79,12 +77,19 @@
     height: 50px;
     border-radius: 10px;
     align-self: flex-end;
-    box-shadow:hsla(30, 16%, 87%, 1) 0px 4px 12px;
+    box-shadow: hsla(30, 16%, 87%, 1) 0px 4px 12px;
 
     .header_profile {
       width: 100%;
       height: 100%;
       border-radius: 10px;
+      transition: all 0.3s ease-in-out;
+
+      &:hover {
+        cursor: pointer;
+        scale: 1.1;
+        border-radius: 5px;
+      }
     }
 
     .profile_overlay {
@@ -104,21 +109,31 @@
   .searchBar {
     // styles for search bar
     width: 100%;
+    border: none;
+    background-color: transparent;
+    color: hsla(0, 0%, 96%, 1);
+    font-family: 'Prompt', sans-serif;
+    font-size: 15px;
+    letter-spacing: 2px;
+    border-bottom: 2px solid hsla(250, 46%, 68%, 1);
+
+    &:focus {
+      border-bottom: 2px solid rgb(100, 91, 143);
+      outline: none;
+    }
   }
 
-  .searchWrapper{
+  .searchWrapper {
     display: flex;
     gap: 20px;
 
     .genreSearch,
     .artistSearch {
-        color: #ebebeb;
-        width: 100%;
-        background-color: rgba($color: #000000, $alpha: 1);
-      }
+      color: #ebebeb;
+      width: 100%;
+      background-color: rgba($color: #000000, $alpha: 1);
+    }
   }
-
-  
 }
 
 .homepage__content {
@@ -131,7 +146,7 @@
     font-size: 32px;
     text-transform: uppercase;
     letter-spacing: 2px;
-    background-color: hsla(0, 0%, 96%, .2);
+    background-color: hsla(0, 0%, 96%, 0.2);
     margin-right: auto;
     width: fit-content;
     padding: 8px;
