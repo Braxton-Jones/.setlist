@@ -14,7 +14,8 @@
   background: rgb(40, 40, 40);
   display: flex;
   flex-direction: column;
-  width: 325px;
+  width: calc(100% - 80px);
+  max-width: 800px;
   height: fit-content;
   border-radius: 5px;
   box-shadow:

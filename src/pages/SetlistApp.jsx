@@ -18,7 +18,6 @@ import sillyEmojiGuy from '../assets/thinking-face_1f914.png'
 function Layout() {
   const loaderResult = useLoaderData()
   const navigate = useNavigate()
-  console.log(loaderResult.data)
   return (
     <main>
       {/* {!loaderResult.data.isOnboarded && (

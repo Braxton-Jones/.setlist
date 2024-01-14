@@ -5,11 +5,11 @@ import { access_token } from '../utility/spotifyAPI_Auth'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import spotify from '../assets/iconmonstr-spotify-1-240.png'
 import Modal from '../components/Modal'
-import { PlaylistCreate, PlaylistSelect } from '../components/Tutorial'
+import { PlaylistCreate, PlaylistSelect } from '../components/Import'
 import { getPlaylists } from '../utility//spotifyAPI_Interactions'
 
 export const homepageLoader = async () => {
-  const token = await access_token
+  let token = await access_token
   const url = 'https://api.spotify.com/v1/me'
   const config = {
     headers: {
@@ -20,8 +20,15 @@ export const homepageLoader = async () => {
     const response = await axios.get(url, config)
     return response.data // return the data so it can be used elsewhere
   } catch (error) {
-    console.error(error)
-    throw error
+    if (error.response && error.response.status === 401) {
+      console.error('Unauthorized request')
+      // Refresh the token and rerun the function
+      token = await access_token
+      return homepageLoader()
+    } else {
+      console.error(error)
+      throw error
+    }
   }
 }
 
@@ -32,7 +39,10 @@ export default function HomePage() {
 
   const [query, setQuery] = useState('')
   const [isModalOpen, setModalOpen] = useState(false)
-  const [currentUsersPlaylists, setCurrentUsersPlaylists] = useState(null)
+  const [selectedPlaylist, setSelectedPlaylist] = useState({
+    id: null,
+    name: null,
+  })
 
   const handleInputChange = (event) => {
     const newQuery = event.target.value
@@ -87,20 +97,22 @@ export default function HomePage() {
       </section>
 
       <Modal isOpen={isModalOpen} onClose={closeModal}>
-        {/* {PlaylistCreate} */}
-        {
-          <PlaylistSelect
-            screenSize={screenSize}
-          />
-        }
+        {/* <PlaylistSelect
+          screenSize={screenSize}
+          setSelectedPlaylist={setSelectedPlaylist}
+          selectedPlaylist={selectedPlaylist}
+        /> */}
+        <PlaylistCreate
+          screenSize={screenSize}
+          playlist={{
+            id: '1Jiukn1VpWD4wldqfHAptz',
+            name: 'rage',
+          }}
+          userPhoto={user.images[0].url}
+        />
       </Modal>
     </section>
   )
 }
 
-{
-  /* <button onClick={() => navigate('/profile')}>Go to Profile</button>
-<button onClick={() => navigate('/search')}>Go to Search</button> */
-}
-
-// <img src={user.images[1].url} alt="profile picture"/>
+// fields=id,description,images,name,owner(id,display_name),tracks(limit,next,offset,previous,total,items(added_at,track(album(images,id,name),artists,name,href)))

@@ -5,6 +5,7 @@
   height: 100vh;
   background-color: hsla(0, 0%, 8%, 1);
   color: hsla(0, 0%, 96%, 1);
+  margin: 0 auto;
 
   .logo {
     font-size: 42px;
@@ -53,7 +54,6 @@
       .spotify {
         width: 20px;
         height: 20px;
-        opacity: 0;
         display: none;
       }
 
@@ -65,7 +65,7 @@
         box-shadow: rgb(16, 107, 48) 0px 4px 12px;
 
         .spotify {
-          opacity: 1;
+          animation: fadeIn 1s ease-in-out;
           display: block;
         }
       }
@@ -159,5 +159,14 @@
 
   .homepage__content__playlists {
     // styles for content playlists
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
