@@ -1,7 +1,8 @@
-import React, { useState, useEffect, Suspense } from 'react'
+import React, { useState, Suspense } from 'react'
 import { searchForArtists } from '../utility/spotifyAPI_Interactions'
 import styles from '../styles/artistselect.module.scss'
 import { Await } from 'react-router-dom'
+import Loading from './Loading'
 
 export default function ArtistSelect({
   selectedArtists,
@@ -26,9 +27,9 @@ export default function ArtistSelect({
       images,
       external_urls,
     }
-    // if slected artists is ALREADY IN THE ARRAY, return
+  
+    // Don't forget to check if the artist is already in the array
 
-    
     if (selectedArtists.length >= 8) {
       return
     }
@@ -81,7 +82,7 @@ export default function ArtistSelect({
       </div>
       <div className={styles.artists_results}>
         {searchInput && (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loading />}>
             <Await resolve={searchPromise}>
               {(data) => {
                 return (

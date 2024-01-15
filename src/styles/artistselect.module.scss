@@ -53,7 +53,7 @@
     .artist_mini {
       display: flex;
       align-items: center;
-      gap: 10px;;
+      gap: 10px;
       background-color: rgba(0, 0, 0, 0.2);
       transition: all 0.2s ease-in-out;
       padding: 5px 10px;
@@ -66,10 +66,9 @@
       }
 
       .title {
-          letter-spacing: 2px;
-          font-size: calc(10px + .25vw);
-        }
-      
+        letter-spacing: 2px;
+        font-size: calc(10px + 0.25vw);
+      }
 
       &:hover {
         background-color: rgba(0, 0, 0, 0.5);

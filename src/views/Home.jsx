@@ -18,11 +18,10 @@ export const homepageLoader = async () => {
   }
   try {
     const response = await axios.get(url, config)
-    return response.data // return the data so it can be used elsewhere
+    return response.data
   } catch (error) {
     if (error.response && error.response.status === 401) {
       console.error('Unauthorized request')
-      // Refresh the token and rerun the function
       token = await access_token
       return homepageLoader()
     } else {
@@ -37,6 +36,18 @@ export default function HomePage() {
   const user = useLoaderData()
   const screenSize = true
 
+  {
+    /*
+  Reminder for States
+  closed = modal is closed
+  step1 = modal is open and on import page
+  step2 = modal is open and on create page
+  step3 = modal is open and on success page
+*/
+  }
+  const [modalState, setModalState] = useState(closed)
+  console.log(modalState)
+
   const [query, setQuery] = useState('')
   const [isModalOpen, setModalOpen] = useState(false)
   const [selectedPlaylist, setSelectedPlaylist] = useState({
@@ -50,6 +61,7 @@ export default function HomePage() {
   }
 
   const openModal = async () => {
+    setModalState('step1')
     setModalOpen(true)
   }
 
@@ -75,7 +87,7 @@ export default function HomePage() {
             src={user.images[0].url}
             alt="profile picture"
             className={styles.header_profile}
-            onClick={() => navigate('/profile')}
+            // onClick={() => navigate('/profile')}
           />
         </div>
       </header>
@@ -97,22 +109,49 @@ export default function HomePage() {
       </section>
 
       <Modal isOpen={isModalOpen} onClose={closeModal}>
-        {/* <PlaylistSelect
+        {modalState === 'step1' && (
+          <PlaylistSelect
+            screenSize={screenSize}
+            setSelectedPlaylist={setSelectedPlaylist}
+            selectedPlaylist={selectedPlaylist}
+            setModalState={setModalState}
+          />
+        )}
+        {modalState === 'step2' && (
+          <PlaylistCreate
+            screenSize={screenSize}
+            playlist={{
+              selectedPlaylist,
+            }}
+            userPhoto={user.images[0].url}
+            setModalState={setModalState}
+          />
+        )}
+        {modalState === 'step3' && (
+          <div>
+            <h1>Success!</h1>
+            <button onClick={closeModal}>Close</button>
+          </div>
+        )}
+      </Modal>
+    </section>
+  )
+}
+
+{
+  /* <PlaylistSelect
           screenSize={screenSize}
           setSelectedPlaylist={setSelectedPlaylist}
           selectedPlaylist={selectedPlaylist}
-        /> */}
-        <PlaylistCreate
+        /> */
+}
+{
+  /* <PlaylistCreate
           screenSize={screenSize}
           playlist={{
             id: '1Jiukn1VpWD4wldqfHAptz',
             name: 'rage',
           }}
           userPhoto={user.images[0].url}
-        />
-      </Modal>
-    </section>
-  )
+        /> */
 }
-
-// fields=id,description,images,name,owner(id,display_name),tracks(limit,next,offset,previous,total,items(added_at,track(album(images,id,name),artists,name,href)))

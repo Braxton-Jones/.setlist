@@ -1,5 +1,5 @@
 // JSX Fragments for the Tutorial page
-import styles from '../styles/tutorial.module.scss'
+import styles from '../styles/import.module.scss'
 import { useState, Suspense } from 'react'
 import {
   getPlaylistDetails,
@@ -8,10 +8,14 @@ import {
 import { Await } from 'react-router-dom'
 import Modal from './Modal'
 import ArtistSelect from './ArtistSelect'
+import arrow from '../assets/arrow.png'
+import Loading from './Loading'
+
 export const PlaylistSelect = ({
   screenSize,
   setSelectedPlaylist,
   selectedPlaylist,
+  setModalState,
 }) => {
   const playlistPromsise = getPlaylists()
 
@@ -25,10 +29,9 @@ export const PlaylistSelect = ({
         ✨ playlists must be added to profile to appear!
       </p>
       <div className={styles.playlist_selection}>
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<Loading />}>
           <Await resolve={playlistPromsise}>
             {(data) => {
-              console.log(data, 'data object')
               return (
                 <div className={styles.playlist_wrapper}>
                   {data.items.map((playlist) => {
@@ -51,8 +54,6 @@ export const PlaylistSelect = ({
                           backgroundSize: 'cover',
                           backgroundPosition: 'center',
                           backgroundRepeat: 'no-repeat',
-                          minHeight: '100px',
-                          minWidth: '100px',
                         }}
                       ></div>
                     )
@@ -63,15 +64,24 @@ export const PlaylistSelect = ({
           </Await>
         </Suspense>
       </div>
-      <button className={styles.import_btn}>
+      <button
+        className={styles.import_btn}
+        onClick={() => setModalState('step2')}
+      >
         Import {selectedPlaylist.name ? selectedPlaylist.name : ''}
       </button>
     </div>
   )
 }
 
-export const PlaylistCreate = ({ screenSize, playlist, userPhoto }) => {
-  const PlaylistDetailsPromise = getPlaylistDetails(playlist.id)
+export const PlaylistCreate = ({
+  screenSize,
+  playlist,
+  userPhoto,
+  setModalState,
+}) => {
+  const { id, name } = playlist.selectedPlaylist
+  const PlaylistDetailsPromise = getPlaylistDetails(id)
   const [selectedArtists, setSelectedArtists] = useState([])
   const [isModalOpen, setModalOpen] = useState(false)
   const openModal = async () => {
@@ -85,12 +95,17 @@ export const PlaylistCreate = ({ screenSize, playlist, userPhoto }) => {
     <>
       <div className={styles.create}>
         <h1 className={styles.create_header}>
+          <img
+            src={arrow}
+            alt="arrow"
+            className={styles.arrow}
+            onClick={() => setModalState('step1')}
+          />
           {screenSize ? 'Create' : 'Create New .setlist()'}
         </h1>
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<Loading />}>
           <Await resolve={PlaylistDetailsPromise}>
             {(data) => {
-              console.log(data, 'data details')
               return (
                 <>
                   <div className={styles.playlist_details}>
@@ -141,21 +156,30 @@ export const PlaylistCreate = ({ screenSize, playlist, userPhoto }) => {
                   </div>
                   <div className={styles.playlist_description}>
                     <h3>Description</h3>
-                    <p>{data.description.replace(/&quot;/g, ' " ')}</p>
+                    {data.description ? (
+                      <p>{data.description.replace(/&quot;/g, ' " ')}</p>
+                    ) : (
+                      <p>No Description.....</p>
+                    )}
                   </div>
 
                   <div className={styles.playlist_genres}>
                     <h3>Genres</h3>
                     <div className={styles.genres}>
-                      {[
-                        ...new Set(
-                          selectedArtists.flatMap((artist) => artist.genres),
-                        ),
-                      ].map((genre, index) => (
-                        <p key={index} className={styles.genre}>
-                          {genre}
-                        </p>
-                      ))}
+                      {selectedArtists.flatMap((artist) => artist.genres)
+                        .length === 0 ? (
+                        <p className={styles.genre}>No genres</p>
+                      ) : (
+                        [
+                          ...new Set(
+                            selectedArtists.flatMap((artist) => artist.genres),
+                          ),
+                        ].map((genre, index) => (
+                          <p key={index} className={styles.genre}>
+                            {genre}
+                          </p>
+                        ))
+                      )}
                     </div>
                   </div>
 

@@ -1,0 +1,40 @@
+.error404 {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-inline: 30px;
+    h1 {
+      font-size: 100px;
+      font-weight: 700;
+      color: #fff;
+    }
+    p {
+      font-size: 20px;
+      font-weight: 300;
+      color: #fff;
+    }
+    .returnBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      background-color: #fff;
+      color: #000;
+      font-weight: 700;
+      text-decoration: none;
+      width: fit-content;
+      transition: all 0.3s ease-in-out;
+
+      &:hover {
+        background-color: #000;
+        color: #fff;
+        cursor: pointer;
+      }
+    }
+  }
+}
