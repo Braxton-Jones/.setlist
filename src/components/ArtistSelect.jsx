@@ -1,8 +1,9 @@
-import React, { useState, Suspense } from 'react'
+import React, { useState, Suspense, useMemo } from 'react'
 import { searchForArtists } from '../utility/spotifyAPI_Interactions'
 import styles from '../styles/artistselect.module.scss'
 import { Await } from 'react-router-dom'
 import Loading from './Loading'
+import placeholder from '../assets/background.svg'
 
 export default function ArtistSelect({
   selectedArtists,
@@ -10,15 +11,14 @@ export default function ArtistSelect({
   closeModal,
 }) {
   const [searchInput, setSearchInput] = useState('')
-  const searchPromise = searchForArtists(searchInput)
+  const searchPromise = useMemo(() => searchForArtists(searchInput), [searchInput])
+  const [isArtistError, setIsArtistError] = useState(false)
 
   const handleInputChange = (event) => {
     setSearchInput(event.target.value)
   }
 
   const handleAddArtists = (artist) => {
-    console.log(artist)
-    console.log(selectedArtists)
     const { genres, id, name, images, external_urls } = artist
     const newArtists = {
       genres,
@@ -27,10 +27,11 @@ export default function ArtistSelect({
       images,
       external_urls,
     }
-  
+
     // Don't forget to check if the artist is already in the array
 
     if (selectedArtists.length >= 8) {
+      setIsArtistError(true)
       return
     }
     setSelectedArtists([...selectedArtists, newArtists])
@@ -50,6 +51,13 @@ export default function ArtistSelect({
   return (
     <div className={styles.artist_select}>
       <h1>Search For Artists</h1>
+      <div className={styles.error_wrapper}>
+        {isArtistError && (
+          <p className={styles.error}>
+            You can only have 8 featured artists per playlist
+          </p>
+        )}
+      </div>
       <div className={styles.input_wrapper}>
         <input
           type="text"
@@ -60,6 +68,7 @@ export default function ArtistSelect({
         <button
           className={styles.addArtistsBtn}
           onClick={() => handleModalClose()}
+          disabled={selectedArtists.length === 0}
         >
           Add {selectedArtists.length > 0 && selectedArtists.length} Artists
         </button>
@@ -94,14 +103,20 @@ export default function ArtistSelect({
                           key={artist.id}
                           onClick={() => handleAddArtists(artist)}
                         >
-                          <img src={artist.images[0].url} alt={artist.name} />
+                   
+                          {artist.images[0] ? (
+                            <img src={artist.images[0].url} alt={artist.name} />
+                          ) : (
+                            <img src={placeholder} alt={placeholder} />
+                          )}
+
                           <div className={styles.artist_content}>
                             <p className={styles.title}>
                               Artist : {artist.name}
                             </p>
                             <div className={artist.genre}>
                               <p className={styles.title}>
-                                Genres: [Hello, Goodlbye]
+                                Genres: [ {artist.genres.join(', ')} ]
                               </p>
                             </div>
                           </div>

@@ -9,6 +9,18 @@
     margin: 30px 0px 15px 0px;
   }
 
+  .error_wrapper{
+    .error{
+        font-size: calc(10px + 0.25vw);
+        font-style: italic;
+        background-color: hsla(0, 0%, 96%, 0.2);
+        padding: 5px 10px;
+        border-radius: 5px;
+        width: fit-content;
+        margin-bottom: 15px;
+    }
+  }
+
   .input_wrapper {
     display: flex;
     flex-direction: row;
@@ -32,7 +44,7 @@
       border: 2px solid #171717;
       background-color: hsla(250, 46%, 68%, 1);
       color: hsla(0, 0%, 96%, 1);
-      height: 30px;
+      height: fit-content;
       width: calc(30% - 10px);
       letter-spacing: 1.5px;
       border-radius: 10px;
@@ -100,12 +112,14 @@
       .artist {
         display: flex;
         align-items: center;
+        padding: 5px 10px;
         gap: 10px;
         background-color: rgba(0, 0, 0, 0.2);
         border-radius: 10px;
 
         img {
-          width: calc(10% - 10px);
+          height: calc(40px + 1.5vw);
+          width: calc(40px + 1.5vw);
           border-radius: 10px 0px 0px 10px;
         }
 

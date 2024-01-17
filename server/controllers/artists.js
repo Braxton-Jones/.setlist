@@ -9,7 +9,6 @@ exports.createArtist = async (req, res) => {
         photoURL,
         genres,
         spotifyArtistId,
-        spotifyArtistURI,
      } = req.body;
      try {
         const artist = await prisma.artists.create({
@@ -17,8 +16,7 @@ exports.createArtist = async (req, res) => {
                 name,
                 photoURL,
                 genres,
-                spotifyArtistId,
-                spotifyArtistURI,
+                spotifyArtistId
             }
         });
         res.status(201).json(artist);}

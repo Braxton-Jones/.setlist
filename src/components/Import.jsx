@@ -1,6 +1,6 @@
 // JSX Fragments for the Tutorial page
 import styles from '../styles/import.module.scss'
-import { useState, Suspense } from 'react'
+import { useState, Suspense, useMemo } from 'react'
 import {
   getPlaylistDetails,
   getPlaylists,
@@ -11,18 +11,19 @@ import ArtistSelect from './ArtistSelect'
 import arrow from '../assets/arrow.png'
 import Loading from './Loading'
 
+
+
 export const PlaylistSelect = ({
-  screenSize,
   setSelectedPlaylist,
   selectedPlaylist,
   setModalState,
 }) => {
-  const playlistPromsise = getPlaylists()
+  const playlistPromsise = useMemo(() => getPlaylists(), [])
 
   return (
     <div className={styles.select}>
       <h1 className={styles.select_header}>
-        {screenSize ? 'Import' : 'Import New Playlist'}
+        Import
       </h1>
       <p className={styles.tooltip}>Select a playlist to start !</p>
       <p className={styles.tooltip_warning}>
@@ -75,21 +76,54 @@ export const PlaylistSelect = ({
 }
 
 export const PlaylistCreate = ({
-  screenSize,
   playlist,
   userPhoto,
   setModalState,
+  user
 }) => {
   const { id, name } = playlist.selectedPlaylist
-  const PlaylistDetailsPromise = getPlaylistDetails(id)
+  const PlaylistDetailsPromise = useMemo(() => getPlaylistDetails(id), [id])
   const [selectedArtists, setSelectedArtists] = useState([])
   const [isModalOpen, setModalOpen] = useState(false)
+  const [playlistPurpose, setPlaylistPurpose] = useState('');
+  const [isError, setIsError] = useState(false)
   const openModal = async () => {
     setModalOpen(true)
   }
 
   const closeModal = () => {
     setModalOpen(false)
+  }
+
+  const handlePlaylistCreate = () => {
+    if(isError === true) {
+      setIsError(false)
+    }
+    const cleanArtists = selectedArtists.map((artist) => {
+      return {
+        name: artist.name,
+        id: artist.id,
+        genres: artist.genres,
+      }
+    })
+    const playlistGenres = selectedArtists.flatMap((artist) => artist.genres).map((genre) => {
+      return {
+        name: genre,
+      }
+    })
+
+    if(playlistPurpose === '' || playlistPurpose === null || playlistGenres.length === 0 || cleanArtists.length === 0) {
+      setIsError(true)
+      return
+    }
+    const newPlaylist = {
+      name: name,
+      spotifyPlaylistId: id,
+      associatedGenres : playlistGenres,
+      featuredArtists: cleanArtists,
+      purpose: playlistPurpose,
+    }
+    console.log(newPlaylist, user.id)
   }
   return (
     <>
@@ -101,8 +135,8 @@ export const PlaylistCreate = ({
             className={styles.arrow}
             onClick={() => setModalState('step1')}
           />
-          {screenSize ? 'Create' : 'Create New .setlist()'}
-        </h1>
+          Create {name}        
+          </h1>
         <Suspense fallback={<Loading />}>
           <Await resolve={PlaylistDetailsPromise}>
             {(data) => {
@@ -142,7 +176,6 @@ export const PlaylistCreate = ({
                             +
                           </div>
                           {selectedArtists.map((artist) => {
-                            console.log(artist, 'artist')
                             return (
                               <img
                                 src={artist.images[0].url}
@@ -153,6 +186,9 @@ export const PlaylistCreate = ({
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div className={styles.error}>
+                    {isError && (<p className={styles.error_message}>Please fill out all fields</p>)}
                   </div>
                   <div className={styles.playlist_description}>
                     <h3>Description</h3>
@@ -189,6 +225,7 @@ export const PlaylistCreate = ({
                       type="textarea"
                       placeholder="Enter a catchy little tagline"
                       maxLength="30"
+                      onChange={(e) => setPlaylistPurpose(e.target.value)}
                     />
                   </div>
 
@@ -221,7 +258,12 @@ export const PlaylistCreate = ({
             }}
           </Await>
         </Suspense>
-        <button className={styles.create_btn}>Create</button>
+        <button
+          className={isError ? styles.create_btn_error : styles.create_btn}
+          onClick={() => handlePlaylistCreate()}
+        >
+          Create
+        </button>
       </div>
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ArtistSelect

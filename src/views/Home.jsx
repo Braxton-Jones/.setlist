@@ -1,12 +1,14 @@
 import styles from '../styles/homepage.module.scss'
 import axios from 'axios'
-import { useState } from 'react'
-import { access_token } from '../utility/spotifyAPI_Auth'
-import { useLoaderData, useNavigate } from 'react-router-dom'
+import { Suspense, useState } from 'react'
+import { access_token, spotify_logout } from '../utility/spotifyAPI_Auth'
+import { Await, useLoaderData, useNavigate } from 'react-router-dom'
 import spotify from '../assets/iconmonstr-spotify-1-240.png'
 import Modal from '../components/Modal'
 import { PlaylistCreate, PlaylistSelect } from '../components/Import'
 import { getPlaylists } from '../utility//spotifyAPI_Interactions'
+import { getAllPlaylists } from '../utility/setlistAPI_Interactions'
+import Loading from '../components/Loading'
 
 export const homepageLoader = async () => {
   let token = await access_token
@@ -34,7 +36,7 @@ export const homepageLoader = async () => {
 export default function HomePage() {
   const navigate = useNavigate()
   const user = useLoaderData()
-  const screenSize = true
+  
 
   {
     /*
@@ -46,7 +48,7 @@ export default function HomePage() {
 */
   }
   const [modalState, setModalState] = useState(closed)
-  console.log(modalState)
+  const getAllPlaylistsPromise = getAllPlaylists()
 
   const [query, setQuery] = useState('')
   const [isModalOpen, setModalOpen] = useState(false)
@@ -69,6 +71,14 @@ export default function HomePage() {
     setModalOpen(false)
   }
 
+  const resetSelectedPlaylist = () => {
+    setSelectedPlaylist({
+      id: null,
+      name: null,
+    })
+  }
+
+
   return (
     <section className={styles.homepage}>
       <h1 className={styles.logo}>SETLIST</h1>
@@ -79,7 +89,7 @@ export default function HomePage() {
           onClick={openModal}
           disabled={isModalOpen}
         >
-          {screenSize ? 'Import' : 'Import Playlist'}
+          Import
           <img src={spotify} alt="spotify logo" className={styles.spotify} />
         </button>
         <div className={styles.profile}>
@@ -105,13 +115,35 @@ export default function HomePage() {
       <section className={styles.homepage__content}>
         <h2>Playlists</h2>
         <div className={styles.homepage__content__filters}></div>
-        <div className={styles.homepage__content__playlists}></div>
+        <div className={styles.homepage__content__playlists}>
+          <Suspense fallback={<Loading />}>
+            <Await resolve={getAllPlaylistsPromise}>
+              {(data) => {
+                console.log(data, "playlists")
+                return (
+                  <>
+                    {data.map((playlist) => {
+                      return (
+                        <div
+                          key={playlist.id}
+                          className={styles.homepage__content__playlists__playlist}
+                        >
+                          <h3>{playlist.name}</h3>
+                          <p>{playlist.purpose}</p>
+                        </div>
+                      )
+                    })}
+                  </>
+                )
+              }}
+            </Await>
+          </Suspense>
+        </div>
       </section>
 
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
+      <Modal isOpen={isModalOpen} onClose={closeModal} resetState={resetSelectedPlaylist}>
         {modalState === 'step1' && (
           <PlaylistSelect
-            screenSize={screenSize}
             setSelectedPlaylist={setSelectedPlaylist}
             selectedPlaylist={selectedPlaylist}
             setModalState={setModalState}
@@ -119,12 +151,12 @@ export default function HomePage() {
         )}
         {modalState === 'step2' && (
           <PlaylistCreate
-            screenSize={screenSize}
             playlist={{
               selectedPlaylist,
             }}
             userPhoto={user.images[0].url}
             setModalState={setModalState}
+            user={user}
           />
         )}
         {modalState === 'step3' && (
@@ -138,20 +170,3 @@ export default function HomePage() {
   )
 }
 
-{
-  /* <PlaylistSelect
-          screenSize={screenSize}
-          setSelectedPlaylist={setSelectedPlaylist}
-          selectedPlaylist={selectedPlaylist}
-        /> */
-}
-{
-  /* <PlaylistCreate
-          screenSize={screenSize}
-          playlist={{
-            id: '1Jiukn1VpWD4wldqfHAptz',
-            name: 'rage',
-          }}
-          userPhoto={user.images[0].url}
-        /> */
-}

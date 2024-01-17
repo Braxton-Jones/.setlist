@@ -6,9 +6,13 @@ const playlistController = require('../controllers/playlists.js');
 router.post('/create/:userid', playlistController.createPlaylist);
 
 // Get a Playlist
-router.get('/:id', playlistController.getPlaylistById);
+router.get('/:playlistId', playlistController.getPlaylistById);
 
 // Delete a Playlist by its ID
 router.delete('/:id', playlistController.deletePlaylist);
+
+// Get all Playlists
+router.get('/', playlistController.getAllPlaylists);
+
 
 module.exports = router;

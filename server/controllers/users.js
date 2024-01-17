@@ -40,12 +40,9 @@ exports.getUserBySpotifyId = async (req, res) => {
       },
       select:{
         id: true,
-        email: true,
         name: true,
         spotifyUserId: true,
-        isOnboarded: true,
         playlists: true,
-        posts: true,
       }
     });
     res.status(200).json(user);
