@@ -11,7 +11,10 @@ export default function ArtistSelect({
   closeModal,
 }) {
   const [searchInput, setSearchInput] = useState('')
-  const searchPromise = useMemo(() => searchForArtists(searchInput), [searchInput])
+  const searchPromise = useMemo(
+    () => searchForArtists(searchInput),
+    [searchInput],
+  )
   const [isArtistError, setIsArtistError] = useState(false)
 
   const handleInputChange = (event) => {
@@ -103,7 +106,6 @@ export default function ArtistSelect({
                           key={artist.id}
                           onClick={() => handleAddArtists(artist)}
                         >
-                   
                           {artist.images[0] ? (
                             <img src={artist.images[0].url} alt={artist.name} />
                           ) : (

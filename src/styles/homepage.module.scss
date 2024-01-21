@@ -72,7 +72,7 @@
       }
     }
 
-    .logout{
+    .logout {
       margin-left: 20px;
       text-transform: uppercase;
       letter-spacing: 2px;
@@ -86,7 +86,7 @@
       box-shadow: hsla(250, 46%, 68%, 1) 0px 4px 12px;
 
       &:hover {
-        background-color: rgb(211, 136, 136); 
+        background-color: rgb(211, 136, 136);
         color: #2b2b2b;
         font-weight: 500;
         letter-spacing: 1.5px;
@@ -121,6 +121,47 @@
       p {
         // styles for overlay text
       }
+    }
+  }
+}
+
+.success {
+  background-color: hsla(250, 46%, 68%, 0.4);
+  color: hsla(0, 0%, 96%, 0.9);
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  height: 300px;
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  p {
+    font-size: 25px;
+    font-weight: 300;
+  }
+
+  button {
+    margin-top: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    border-radius: 10px;
+    border: 2px solid rgb(12, 12, 12);
+    padding: 5px 10px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: hsla(250, 46%, 68%, 1) 0px 4px 12px;
+
+    &:hover {
+      background-color: rgb(191, 187, 212);
+      color: #2b2b2b;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      box-shadow: rgb(81, 75, 116) 0px 4px 12px;
     }
   }
 }
@@ -181,7 +222,9 @@
   }
 
   .homepage__content__playlists {
-    // styles for content playlists
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px 10px;
   }
 }
 

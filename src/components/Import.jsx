@@ -10,21 +10,20 @@ import Modal from './Modal'
 import ArtistSelect from './ArtistSelect'
 import arrow from '../assets/arrow.png'
 import Loading from './Loading'
-
-
+import { createPlaylist } from '../utility/setlistAPI_Interactions'
+import toast, { Toaster } from 'react-hot-toast'
 
 export const PlaylistSelect = ({
   setSelectedPlaylist,
   selectedPlaylist,
   setModalState,
+  user,
 }) => {
   const playlistPromsise = useMemo(() => getPlaylists(), [])
 
   return (
     <div className={styles.select}>
-      <h1 className={styles.select_header}>
-        Import
-      </h1>
+      <h1 className={styles.select_header}>Import</h1>
       <p className={styles.tooltip}>Select a playlist to start !</p>
       <p className={styles.tooltip_warning}>
         ✨ playlists must be added to profile to appear!
@@ -33,9 +32,14 @@ export const PlaylistSelect = ({
         <Suspense fallback={<Loading />}>
           <Await resolve={playlistPromsise}>
             {(data) => {
+              const filteredPlaylists = data.items.filter(
+                (playlist) => playlist.owner.id === user.id,
+              )
+              console.log(filteredPlaylists, 'filtered playlists')
               return (
                 <div className={styles.playlist_wrapper}>
-                  {data.items.map((playlist) => {
+                  {filteredPlaylists.map((playlist) => {
+                    console.log(playlist, 'playlist in playlist select')
                     return (
                       <div
                         className={`${styles.playlist} ${
@@ -79,13 +83,13 @@ export const PlaylistCreate = ({
   playlist,
   userPhoto,
   setModalState,
-  user
+  user,
 }) => {
   const { id, name } = playlist.selectedPlaylist
   const PlaylistDetailsPromise = useMemo(() => getPlaylistDetails(id), [id])
   const [selectedArtists, setSelectedArtists] = useState([])
   const [isModalOpen, setModalOpen] = useState(false)
-  const [playlistPurpose, setPlaylistPurpose] = useState('');
+  const [playlistPurpose, setPlaylistPurpose] = useState('')
   const [isError, setIsError] = useState(false)
   const openModal = async () => {
     setModalOpen(true)
@@ -95,8 +99,8 @@ export const PlaylistCreate = ({
     setModalOpen(false)
   }
 
-  const handlePlaylistCreate = () => {
-    if(isError === true) {
+  const handlePlaylistCreate = async () => {
+    if (isError === true) {
       setIsError(false)
     }
     const cleanArtists = selectedArtists.map((artist) => {
@@ -106,27 +110,56 @@ export const PlaylistCreate = ({
         genres: artist.genres,
       }
     })
-    const playlistGenres = selectedArtists.flatMap((artist) => artist.genres).map((genre) => {
-      return {
-        name: genre,
-      }
-    })
+    const playlistGenres = selectedArtists
+      .flatMap((artist) => artist.genres)
+      .map((genre) => {
+        return {
+          name: genre,
+        }
+      })
 
-    if(playlistPurpose === '' || playlistPurpose === null || playlistGenres.length === 0 || cleanArtists.length === 0) {
+    if (
+      playlistPurpose === '' ||
+      playlistPurpose === null ||
+      playlistGenres.length === 0 ||
+      cleanArtists.length === 0
+    ) {
       setIsError(true)
       return
     }
     const newPlaylist = {
       name: name,
       spotifyPlaylistId: id,
-      associatedGenres : playlistGenres,
+      associatedGenres: playlistGenres,
       featuredArtists: cleanArtists,
       purpose: playlistPurpose,
     }
-    console.log(newPlaylist, user.id)
+    const isImportSuccess = await createPlaylist(user.id, newPlaylist)
+    if (isImportSuccess === 'Playlist already exists') {
+      toast.error('Playlist already exists', {
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+          fontFamily: 'Syne',
+        },
+      })
+      return
+    } else {
+      toast.success('Playlist successfully imported', {
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+          fontFamily: 'Syne',
+        },
+      })
+      setModalState('step3')
+    }
   }
   return (
     <>
+      <Toaster />
       <div className={styles.create}>
         <h1 className={styles.create_header}>
           <img
@@ -135,8 +168,8 @@ export const PlaylistCreate = ({
             className={styles.arrow}
             onClick={() => setModalState('step1')}
           />
-          Create {name}        
-          </h1>
+          Create {name}
+        </h1>
         <Suspense fallback={<Loading />}>
           <Await resolve={PlaylistDetailsPromise}>
             {(data) => {
@@ -188,7 +221,11 @@ export const PlaylistCreate = ({
                     </div>
                   </div>
                   <div className={styles.error}>
-                    {isError && (<p className={styles.error_message}>Please fill out all fields</p>)}
+                    {isError && (
+                      <p className={styles.error_message}>
+                        Please fill out all fields
+                      </p>
+                    )}
                   </div>
                   <div className={styles.playlist_description}>
                     <h3>Description</h3>
@@ -275,5 +312,3 @@ export const PlaylistCreate = ({
     </>
   )
 }
-
-// description,images,name,owner(id,display_name),tracks(limit,next,offset,previous,total,items(added_at,track(album(images),id,name,artists)))

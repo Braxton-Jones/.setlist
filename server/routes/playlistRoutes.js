@@ -14,5 +14,9 @@ router.delete('/:id', playlistController.deletePlaylist);
 // Get all Playlists
 router.get('/', playlistController.getAllPlaylists);
 
+// Search for a Playlist
+router.get('/search/:query', playlistController.searchPlaylists);
+
+
 
 module.exports = router;

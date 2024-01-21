@@ -1,14 +1,18 @@
 import styles from '../styles/homepage.module.scss'
 import axios from 'axios'
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useMemo } from 'react'
 import { access_token, spotify_logout } from '../utility/spotifyAPI_Auth'
 import { Await, useLoaderData, useNavigate } from 'react-router-dom'
 import spotify from '../assets/iconmonstr-spotify-1-240.png'
 import Modal from '../components/Modal'
 import { PlaylistCreate, PlaylistSelect } from '../components/Import'
-import { getPlaylists } from '../utility//spotifyAPI_Interactions'
-import { getAllPlaylists } from '../utility/setlistAPI_Interactions'
+import PlaylistDetails from '../components/PlaylistDetails'
+import {
+  getAllPlaylists,
+  searchForPlaylists,
+} from '../utility/setlistAPI_Interactions'
 import Loading from '../components/Loading'
+import Playlist from '../components/Playlist'
 
 export const homepageLoader = async () => {
   let token = await access_token
@@ -23,8 +27,6 @@ export const homepageLoader = async () => {
     return response.data
   } catch (error) {
     if (error.response && error.response.status === 401) {
-      console.error('Unauthorized request')
-      token = await access_token
       return homepageLoader()
     } else {
       console.error(error)
@@ -36,26 +38,24 @@ export const homepageLoader = async () => {
 export default function HomePage() {
   const navigate = useNavigate()
   const user = useLoaderData()
-  
-
-  {
-    /*
-  Reminder for States
-  closed = modal is closed
-  step1 = modal is open and on import page
-  step2 = modal is open and on create page
-  step3 = modal is open and on success page
-*/
-  }
   const [modalState, setModalState] = useState(closed)
-  const getAllPlaylistsPromise = getAllPlaylists()
-
+  const [isImportSuccessful, setIsImportSuccessful] = useState(false)
   const [query, setQuery] = useState('')
-  const [isModalOpen, setModalOpen] = useState(false)
   const [selectedPlaylist, setSelectedPlaylist] = useState({
     id: null,
     name: null,
   })
+  const getAllPlaylistsPromise = useMemo(
+    () => getAllPlaylists(),
+    [query, isImportSuccessful],
+  )
+  const searchForPlaylistsPromise = useMemo(
+    () => searchForPlaylists(query),
+    [query],
+  )
+  const [isModalOpen, setModalOpen] = useState(false)
+  const [isPlaylistDetailsOpen, setPlaylistDetailsOpen] = useState(false)
+  const [selectedSetlist, setSelectedSetlist] = useState(null)
 
   const handleInputChange = (event) => {
     const newQuery = event.target.value
@@ -71,13 +71,20 @@ export default function HomePage() {
     setModalOpen(false)
   }
 
+  const openPlaylistDetails = () => {
+    setPlaylistDetailsOpen(true)
+  }
+
+  const closePlaylistDetails = () => {
+    setPlaylistDetailsOpen(false)
+  }
+
   const resetSelectedPlaylist = () => {
     setSelectedPlaylist({
       id: null,
       name: null,
     })
   }
-
 
   return (
     <section className={styles.homepage}>
@@ -119,20 +126,37 @@ export default function HomePage() {
           <Suspense fallback={<Loading />}>
             <Await resolve={getAllPlaylistsPromise}>
               {(data) => {
-                console.log(data, "playlists")
+                console.log(data, 'playlists')
                 return (
                   <>
-                    {data.map((playlist) => {
-                      return (
-                        <div
+                    {query === null || query === '' ? (
+                      data.map((playlist) => (
+                        <Playlist
                           key={playlist.id}
-                          className={styles.homepage__content__playlists__playlist}
-                        >
-                          <h3>{playlist.name}</h3>
-                          <p>{playlist.purpose}</p>
-                        </div>
-                      )
-                    })}
+                          playlist={playlist}
+                          openPlaylistDetails={openPlaylistDetails}
+                          setSelectedSetlist={setSelectedSetlist}
+                        />
+                      ))
+                    ) : (
+                      <Await resolve={searchForPlaylistsPromise}>
+                        {(data) => {
+                          console.log(data, 'search')
+                          return (
+                            <>
+                              {data.map((playlist) => (
+                                <Playlist
+                                  key={playlist.id}
+                                  playlist={playlist}
+                                  openPlaylistDetails={openPlaylistDetails}
+                                  setSelectedSetlist={setSelectedSetlist}
+                                />
+                              ))}
+                            </>
+                          )
+                        }}
+                      </Await>
+                    )}
                   </>
                 )
               }}
@@ -141,12 +165,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      <Modal isOpen={isModalOpen} onClose={closeModal} resetState={resetSelectedPlaylist}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        resetState={resetSelectedPlaylist}
+        modalState={modalState}
+      >
         {modalState === 'step1' && (
           <PlaylistSelect
             setSelectedPlaylist={setSelectedPlaylist}
             selectedPlaylist={selectedPlaylist}
             setModalState={setModalState}
+            user={user}
           />
         )}
         {modalState === 'step2' && (
@@ -160,13 +190,25 @@ export default function HomePage() {
           />
         )}
         {modalState === 'step3' && (
-          <div>
+          <div className={styles.success}>
             <h1>Success!</h1>
-            <button onClick={closeModal}>Close</button>
+            <p>Playlist was successfully imported! </p>
+            <button
+              className={styles.success__button}
+              onClick={() => {
+                setModalState('closed')
+                closeModal()
+                setIsImportSuccessful(!isImportSuccessful)
+              }}
+            >
+              Back to Home!
+            </button>
           </div>
         )}
+      </Modal>
+      <Modal isOpen={isPlaylistDetailsOpen} onClose={closePlaylistDetails}>
+        <PlaylistDetails selectedSetlist={selectedSetlist} />
       </Modal>
     </section>
   )
 }
-

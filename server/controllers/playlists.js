@@ -17,7 +17,7 @@ exports.createPlaylist = async (req, res) => {
             },
         });
         if (playlistExists) {
-            res.status(409).json({ error: "Playlist already exists" });
+            res.status(200).json({ message: "Playlist already exists" });
             return;
         }
 
@@ -99,7 +99,7 @@ exports.createPlaylist = async (req, res) => {
         }
         });
     
-        res.status(201).json(playlist);
+        res.status(201).json({ message: "Playlist created"});
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
@@ -140,17 +140,18 @@ exports.deletePlaylist = async (req, res) => {
     try {
         const playlist = await prisma.playlists.delete({
             where: {
-                spotifyPlaylistId: parseInt(req.params.spotifyPlaylistId),
+                id: parseInt(req.params.id),
             },
         });
-        res.status(200).json(playlist, { message: "Playlist deleted" });
+        res.status(200).json({ playlist, message: "Playlist deleted" });
     } catch (error) {
         console.error(error);
         res.status(404).json({ error: error.message });
     } finally {
         await prisma.$disconnect();
-      }
+    }
 }
+
 
 // Get all playlists
 exports.getAllPlaylists = async (req, res) => {
@@ -161,6 +162,7 @@ exports.getAllPlaylists = async (req, res) => {
                 name: true,
                 spotifyPlaylistId: true,
                 purpose: true,
+                featuredArtists: true,
                 creator: {
                     select: {
                         spotifyUserId: true,
@@ -177,6 +179,86 @@ exports.getAllPlaylists = async (req, res) => {
         await prisma.$disconnect();
       }
 }
+
+
+exports.searchPlaylists = async (req, res) => {
+    try {
+        console.log(`Searching for playlists containing "${req.params.query}"...`);
+        const playlists = await prisma.playlists.findMany({
+            where: {
+                OR: [
+                    {
+                        name: {
+                            contains: req.params.query,
+                            mode: "insensitive"
+                        }
+                    },
+                    {
+                        featuredArtists: {
+                            some: {
+                                name: {
+                                    contains: req.params.query,
+                                    mode: "insensitive"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        creator: {
+                            some: {
+                                name: {
+                                    contains: req.params.query,
+                                    mode: "insensitive"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        purpose: {
+                            contains: req.params.query,
+                            mode: "insensitive"
+                        }
+                    }
+                ]
+            },
+            select:{
+                id: true,
+                name: true,
+                spotifyPlaylistId: true,
+                purpose: true,
+                featuredArtists: {
+                    select: {
+                        name: true
+                    }
+                },
+                creator: {
+                    select: {
+                        spotifyUserId: true,
+                        name: true
+                    }
+                }
+            }
+        });
+        
+
+        if (playlists.length === 0) {
+            console.log(`No playlists found for query: ${req.params.query}`);
+        } else {
+            console.log('Found playlists: ', playlists);
+        }
+
+        res.status(200).json(playlists);
+    } catch (error) {
+        console.error(error);
+        res.status(404).json({ error: error.message });
+    } finally {
+        await prisma.$disconnect();
+    }
+}
+
+
+
+
 
 
 
