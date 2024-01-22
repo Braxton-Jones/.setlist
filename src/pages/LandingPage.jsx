@@ -13,7 +13,7 @@ export default function LandingPage() {
           </p>
 
           <div className={styles.btn_container}>
-            <a className={styles.btn} href="http://localhost:3001/login">
+            <a className={styles.btn} href="https://setlistapi.onrender.com/login">
               Log In
             </a>
           </div>
