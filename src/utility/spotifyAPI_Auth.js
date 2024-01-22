@@ -91,4 +91,3 @@ const getAccessToken = async () => {
 }
 
 export const access_token = getAccessToken()
-

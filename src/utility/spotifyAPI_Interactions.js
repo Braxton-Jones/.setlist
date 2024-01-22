@@ -91,10 +91,10 @@ export const getPlaylistImage = async (playlistId) => {
       Authorization: `Bearer ${token}`,
     },
   }
-  try{
+  try {
     const response = await axios.get(url, config)
     return response.data
-  }catch(error){
+  } catch (error) {
     if (error.response && error.response.status === 401) {
       return getPlaylistImage(playlistId)
     } else {
@@ -114,12 +114,12 @@ export const followPlaylist = async (playlistId, userId, setBtnState) => {
       Authorization: `Bearer ${token}`,
     },
   }
-  try{
+  try {
     const response = await axios.get(url, config)
-    if(response.data[0] === true){
+    if (response.data[0] === true) {
       setBtnState(true)
       return
-    }else{
+    } else {
       // Follow playlist
       const url = `https://api.spotify.com/v1/playlists/${playlistId}/followers`
       const config = {
@@ -127,18 +127,17 @@ export const followPlaylist = async (playlistId, userId, setBtnState) => {
           Authorization: `Bearer ${token}`,
         },
       }
-      try{
-        const response = await axios.put(url, {public: false}, config)
+      try {
+        const response = await axios.put(url, { public: false }, config)
         setBtnState(true)
         return
-      }catch(error){
-       console.error(error)
+      } catch (error) {
+        console.error(error)
       }
-     
     }
-}catch(error){
-  console.error(error)
-}
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 export const getArtistImages = async (artistIds) => {
@@ -149,10 +148,10 @@ export const getArtistImages = async (artistIds) => {
       Authorization: `Bearer ${token}`,
     },
   }
-  try{
+  try {
     const response = await axios.get(url, config)
     return response.data
-  }catch(error){
+  } catch (error) {
     console.error(error)
   }
 }
