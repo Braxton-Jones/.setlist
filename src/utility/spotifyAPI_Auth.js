@@ -36,7 +36,7 @@ const refreshToken = async () => {
     }
 
     const { data } = await axios.get(
-      `http://localhost:3001/refresh_token?refresh_token=${LOCALSTORAGE_VALUES.refreshToken}`,
+      `https://setlistapi.onrender.com/refresh_token?refresh_token=${LOCALSTORAGE_VALUES.refreshToken}`,
     )
 
     window.localStorage.setItem(

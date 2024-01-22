@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const createPlaylist = async (userId, playlist) => {
-  const url = `http://localhost:3001/playlist/create/${userId}`
+  const url = `https://setlistapi.onrender.com/playlist/create/${userId}`
   const body = {
     name: playlist.name,
     spotifyPlaylistId: playlist.spotifyPlaylistId,
@@ -19,17 +19,10 @@ export const createPlaylist = async (userId, playlist) => {
   }
 }
 
-export const getPlaylist = async (playlistId) => {
-  // url = `http://localhost:3001/playlist/${playlistId}`;
-}
-
-export const deletePlaylist = async (playlistId) => {
-  // url = `http://localhost:3001/playlist/${playlistId}`;
-}
 
 export const getAllPlaylists = async () => {
   // url = `http://localhost:3001/playlist/`;
-  const url = `http://localhost:3001/playlist/`
+  const url = `https://setlistapi.onrender.com/playlist/`
   try {
     const response = await axios.get(url)
     return response.data
@@ -40,7 +33,7 @@ export const getAllPlaylists = async () => {
 }
 
 export const searchForPlaylists = async (query) => {
-  const url = `http://localhost:3001/playlist/search/${query}`
+  const url = `https://setlistapi.onrender.com/playlist/search/${query}`
   try {
     const response = await axios.get(url)
     return response.data
