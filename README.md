@@ -10,12 +10,6 @@
 - Share Playlists with Others
 - Discover new playlists made for different vibes and occasions
 
-## Getting Started
-
-### Prerequisites
-
-List any prerequisites or dependencies that need to be installed or configured.
-
 ### Installation
 
 1. Clone this repository:
@@ -48,7 +42,7 @@ The project should now be accessible in your web browser at [http://localhost:30
 
 ### Environment Variables
 
-List any environment variables that need to be configured and their purposes.
+You need to add your own env variables, in this case you need a Spotify API account and a database
 
 ```env
 DATABASE_URL=""
