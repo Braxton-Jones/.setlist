@@ -42,25 +42,26 @@ export const PlaylistSelect = ({
                     console.log(playlist, 'playlist in playlist select')
                     return (
                       <div
-                        className={`${styles.playlist} ${
-                          selectedPlaylist.id === playlist.id
-                            ? styles.selected_playlist
-                            : ''
-                        }`}
-                        key={playlist.id}
-                        onClick={() => {
-                          setSelectedPlaylist({
-                            id: playlist.id,
-                            name: playlist.name,
-                          })
-                        }}
-                        style={{
-                          backgroundImage: `url(${playlist.images[0].url})`,
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center',
-                          backgroundRepeat: 'no-repeat',
-                        }}
-                      ></div>
+ className={`${styles.playlist} ${
+    selectedPlaylist.id === playlist.id
+      ? styles.selected_playlist
+      : ''
+ }`}
+ key={playlist.id}
+ onClick={() => {
+    setSelectedPlaylist({
+      id: playlist.id,
+      name: playlist.name,
+    })
+ }}
+ style={{
+    backgroundImage: playlist.images && playlist.images.length > 0 ? `url(${playlist.images[0].url})` : '',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+ }}
+></div>
+
                     )
                   })}
                 </div>
