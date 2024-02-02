@@ -9,7 +9,7 @@ Right now, I'm working on getting an extension from Spotify so I can go live wit
 
 ## How It Works 
 
-https://github.com/Braxton-Jones/.setlist/assets/58635532/fedc1ccd-2c40-4ec2-9088-c00ed533f17e
+https://github.com/Braxton-Jones/.setlist/assets/58635532/6df3907f-3a88-4e17-aeae-5de4a16b5ac7
 
 To get started with the app, sign in using Spotify's authorization. Once authenticated, you'll be directed to the homepage. From there, you'll notice the "Import" button prominently displayed. Click on this button to initiate the playlist import process.
 
